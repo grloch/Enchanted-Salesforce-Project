@@ -20,9 +20,9 @@ export function getTimeStamp(text?: string) {
 export function deletePath(deletedPath: string) {
   if (Fs.existsSync(deletedPath)) {
     Fs.rmSync(deletedPath, { recursive: true });
-    logger.methodResponse("utils.ts/deletePath", true);
+    logger.methodResponse(`utils.ts/deletePath (${deletedPath})`, true);
   } else {
-    logger.methodResponse("utils.ts/deletePath", false);
+    logger.methodResponse(`utils.ts/deletePath (${deletedPath})`, false);
   }
 }
 
