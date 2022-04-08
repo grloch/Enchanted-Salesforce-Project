@@ -2,48 +2,28 @@
 import * as Path from "path";
 import * as ChildProcess from "child_process";
 import * as Fs from "fs-extra";
+import * as paths from "../../tools/paths";
+import * as sfdxController from "../../tools/sfdx";
+import { PackageHelper } from "../../tools/package";
 
 require("dotenv").config();
 
-let paths = {
-  forceApp: "force-app",
-  tempForceApp: "_tempForceApp",
-  defaultDir: Path.join("force-app", "main", "default")
-};
+const mock = true; //!
 
 (async () => {
-  rebaseForceApp(true);
-  var manifest = "";
-  var salesforceAlias = "";
+  if (!mock) sfdxController.rebaseForceApp(true);
+
+  var salesforceAlias = mock ? "DefaultDevOrg" : await sfdxController.getSalesforceOrgAlias();
+  var manifest = await PackageHelper.selectPackage();
+
+  console.log({ org: salesforceAlias, manifest });
 
   // TODO retrieve
   // TODO mover para a pasta correta: alias / manifestName
   // TODO copiar manifest para a pasta correta
 
-  rebaseForceApp(false);
+  if (!mock) sfdxController.rebaseForceApp(false);
 })();
-
-function rebaseForceApp(isBefore: Boolean) {
-  if (isBefore && !Fs.existsSync(paths.defaultDir)) {
-    Fs.mkdirSync(paths.defaultDir, { recursive: true });
-  }
-
-  var oldPath = isBefore ? paths.forceApp : paths.tempForceApp;
-  var newPath = isBefore ? paths.tempForceApp : paths.forceApp;
-
-  if (!isBefore) {
-    Fs.rmSync(paths.forceApp, { recursive: true });
-  }
-
-  if (Fs.existsSync(oldPath) && !Fs.existsSync(newPath)) {
-    Fs.renameSync(oldPath, newPath);
-    console.log(`Renamed "${oldPath}" to: "${newPath}"`);
-  }
-
-  if (isBefore) {
-    Fs.mkdirSync(paths.defaultDir, { recursive: true });
-  }
-}
 
 // var manifestFile: string,
 //   downloadDir = Utils.defaultPackageDirectorie();
