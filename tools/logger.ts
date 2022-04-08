@@ -13,11 +13,7 @@ class LoggerController {
   private allowBucket = true;
   private logBucket: Array<string> = [];
 
-  constructor() {
-    try {
-      Fs.rmSync(paths.logs, { recursive: true });
-    } catch (error) {}
-  }
+  constructor() {}
 
   public setFileName(options?: setFileNameOptions) {
     let { filename } = options ?? {};
