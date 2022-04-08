@@ -40,3 +40,4 @@ $RECYCLE.BIN/
 .env
 private
 packages/*
+force-app/main/default/
