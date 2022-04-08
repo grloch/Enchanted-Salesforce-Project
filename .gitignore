@@ -39,5 +39,4 @@ $RECYCLE.BIN/
 # Local environment variables
 .env
 private
-.env.example
 packages/*
