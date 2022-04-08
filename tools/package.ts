@@ -1,2 +1,4 @@
 export class packageController {}
-export class packageHelper {}
+export class packageHelper {
+  static async selectPackage() {}
+}
