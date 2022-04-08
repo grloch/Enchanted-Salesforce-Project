@@ -57,7 +57,7 @@ class LoggerController {
   }
 }
 
-const logger = new LoggerController();
+export const logger = new LoggerController();
 
 export function getLogger(options?: setFileNameOptions) {
   logger.setFileName(options);

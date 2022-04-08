@@ -47,7 +47,7 @@ require("dotenv").config();
   } else {
     logger.log({ message: "Starting sfdx", prompt: true });
 
-    PackageController.retrieve(manifestFilePath, salesforceAlias, destinationDir);
+    await PackageController.retrieve(manifestFilePath, salesforceAlias, destinationDir);
   }
 
   // TODO retrieve

@@ -1,6 +1,5 @@
 import * as Fs from "fs-extra";
-import { getLogger } from "./logger";
-const logger = getLogger();
+import { logger } from "./logger";
 
 export function getTimeStamp(text?: string) {
   function prettyNum(num: number) {
@@ -21,18 +20,28 @@ export function getTimeStamp(text?: string) {
 export function deletePath(deletedPath: string) {
   if (Fs.existsSync(deletedPath)) {
     Fs.rmSync(deletedPath, { recursive: true });
-    // logger.methodResponse("utils.ts/deletePath", true);
+    logger.methodResponse("utils.ts/deletePath", true);
   } else {
-    // logger.methodResponse("utils.ts/deletePath", false);
+    logger.methodResponse("utils.ts/deletePath", false);
   }
 }
 
 export function movePath(oldPath: string, newPath: string) {
   Fs.moveSync(oldPath, newPath);
-  // logger.methodResponse("utils.ts/movePath", { oldPath, newPath });
+  logger.methodResponse("utils.ts/movePath", `${oldPath} => ${newPath}`);
 }
 
 export function copyFile(oldPath: string, newPath: string) {
   Fs.copyFileSync(oldPath, newPath);
-  // logger.methodResponse("utils.ts/copyFile", { oldPath, newPath });
+  logger.methodResponse("utils.ts/copyFile", `${oldPath} => ${newPath}`);
+}
+
+export function createDir(dirPath: string) {
+  if (!Fs.existsSync(dirPath)) {
+    Fs.mkdirSync(dirPath, { recursive: true });
+
+    logger.methodResponse("utils.ts/createDir", dirPath);
+  } else {
+    logger.methodResponse("utils.ts/createDir", false);
+  }
 }

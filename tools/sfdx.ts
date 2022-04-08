@@ -4,40 +4,41 @@ import * as paths from "./paths";
 import * as inquirer from "./inquirer";
 import { getLogger } from "./logger";
 import * as ChildProcess from "child_process";
+import * as Utils from "./utils";
 
 const logger = getLogger();
 
 export function rebaseForceApp(isBefore: Boolean) {
-  if (isBefore) {
-    if (Fs.existsSync(paths.defaultDir)) {
-      Fs.rmSync(paths.defaultDir, { recursive: true });
-    }
-    Fs.mkdirSync(paths.defaultDir, { recursive: true });
-  }
-
-  return;
-
-  if (isBefore && !Fs.existsSync(paths.defaultDir)) {
-    Fs.mkdirSync(paths.defaultDir, { recursive: true });
-  }
-
   var oldPath = isBefore ? paths.forceApp : paths.tempForceApp;
   var newPath = isBefore ? paths.tempForceApp : paths.forceApp;
 
-  if (!isBefore) {
-    Fs.rmSync(paths.forceApp, { recursive: true });
-    logger.log({ message: `Removed "${paths.forceApp}"` });
-  }
-
-  if (Fs.existsSync(oldPath) && !Fs.existsSync(newPath)) {
-    Fs.renameSync(oldPath, newPath);
-    logger.log({ message: `Renamed "${oldPath}" to: "${newPath}"`, prompt: true });
-  }
-
   if (isBefore) {
-    Fs.mkdirSync(paths.defaultDir, { recursive: true });
-    logger.log({ message: `Created dir "${paths.defaultDir}"` });
+    Utils.createDir(paths.defaultDir);
+
+    if (Fs.existsSync(oldPath) && !Fs.existsSync(newPath)) {
+      Utils.movePath(oldPath, newPath);
+    }
+
+    Utils.createDir(paths.defaultDir);
+  } else {
+    Utils.createDir(paths.defaultDir);
+
+    if (Fs.existsSync(oldPath) && Fs.existsSync(newPath)) {
+      Utils.deletePath(newPath);
+    }
+
+    Utils.movePath(oldPath, newPath);
   }
+
+  // if (!isBefore) {
+  //   Fs.rmSync(paths.forceApp, { recursive: true });
+  //   logger.log({ message: `Removed "${paths.forceApp}"` });
+  // }
+
+  // if (isBefore) {
+  //   Fs.mkdirSync(paths.defaultDir, { recursive: true });
+  //   logger.log({ message: `Created dir "${paths.defaultDir}"` });
+  // }
 }
 
 export async function getSalesforceOrgAlias(options?: { multiples?: boolean }) {
