@@ -40,8 +40,8 @@ export function createDir(dirPath: string) {
   if (!Fs.existsSync(dirPath)) {
     Fs.mkdirSync(dirPath, { recursive: true });
 
-    logger.methodResponse("utils.ts/createDir", dirPath);
+    logger.methodResponse(`utils.ts/createDir (${dirPath})`, dirPath);
   } else {
-    logger.methodResponse("utils.ts/createDir", false);
+    logger.methodResponse(`utils.ts/createDir (${dirPath})`, false);
   }
 }

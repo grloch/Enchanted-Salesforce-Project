@@ -40,7 +40,6 @@ require("dotenv").config();
   logger.log({ message: table(tableData), prompt: true });
 
   let confirmRetrieve = await inquirer.confirm({ message: "Execute retrieve?" });
-  logger.methodResponse("set confirmRetrieve", confirmRetrieve);
 
   if (!confirmRetrieve) {
     logger.log({ message: "User canceled the operation.", prompt: true });
@@ -49,10 +48,6 @@ require("dotenv").config();
 
     await PackageController.retrieve(manifestFilePath, salesforceAlias, destinationDir);
   }
-
-  // TODO retrieve
-  // TODO mover para a pasta correta: alias / manifestName
-  // TODO copiar manifest para a pasta correta
 
   sfdxController.rebaseForceApp(false);
 })();
