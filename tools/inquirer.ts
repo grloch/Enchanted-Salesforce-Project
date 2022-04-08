@@ -1,6 +1,7 @@
 import * as inquirer from "inquirer";
 import * as Path from "path";
 import * as Fs from "fs-extra";
+import { logger } from "./logger";
 
 interface getListItemParams {
   message: string;
@@ -12,6 +13,8 @@ inquirer.registerPrompt("fileTreeSelection", require("inquirer-file-tree-selecti
 
 export async function confirm(options: { message: string; option?: { y: string; n: string } }) {
   let response = (await inquirer.prompt({ type: "confirm", name: "resp", message: options.message })).resp;
+
+  logger.methodResponse(`tools/inquirer.ts/confirm (${options.message})`, response);
 
   return response;
 }
@@ -25,7 +28,7 @@ export async function getListItem(options: getListItemParams) {
     return true;
   }
 
-  return (
+  let response = (
     await inquirer.prompt({
       type: options.multiples ? "checkbox" : "list",
       name: "resp",
@@ -34,6 +37,10 @@ export async function getListItem(options: getListItemParams) {
       validate: validate
     })
   ).resp;
+
+  logger.methodResponse(`tools/inquirer.ts/getListItem (${options.message})`, response);
+
+  return response;
 }
 
 export async function selectFileOrDirPath(options: { rootPath: string; message: string; type?: "dir" | "file" }) {
@@ -60,6 +67,8 @@ export async function selectFileOrDirPath(options: { rootPath: string; message: 
       validate: validate
     })
   ).resp;
+
+  logger.methodResponse(`tools/inquirer.ts/selectFileOrDirPath (${options.message})`, response);
 
   return response;
 }
