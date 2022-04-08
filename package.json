@@ -14,9 +14,7 @@
     "prettier:verify": "prettier --list-different \"**/*.{cls,cmp,component,css,html,js,json,md,page,trigger,xml,yaml,yml}\"",
     "postinstall": "husky install",
     "precommit": "lint-staged",
-    "utils:package:merge": "echo test",
-    "utils:package:retrieve": "echo test",
-    "utils:package:deploy": "echo test"
+    "utils:package:retrieve": "npx ts-node scripts/project/retrievePackage.ts"
   },
   "devDependencies": {
     "@lwc/eslint-plugin-lwc": "^1.0.1",
@@ -35,6 +33,7 @@
     "lint-staged": "^11.0.0",
     "prettier": "^2.3.2",
     "prettier-plugin-apex": "^1.10.0",
+    "ts-node": "^10.7.0",
     "typescript": "^4.6.3"
   },
   "lint-staged": {
