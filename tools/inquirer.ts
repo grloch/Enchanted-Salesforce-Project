@@ -12,7 +12,19 @@ interface getListItemParams {
 inquirer.registerPrompt("fileTreeSelection", require("inquirer-file-tree-selection-prompt"));
 
 export async function confirm(options: { message: string; option?: { y: string; n: string } }) {
-  let response = (await inquirer.prompt({ type: "confirm", name: "resp", message: options.message })).resp;
+  let option = options.option ?? { y: "Confirm", n: "No" };
+  let choices = [option.y, option.n];
+
+  let inquirerResponse = (
+    await inquirer.prompt({
+      type: "list",
+      name: "resp",
+      message: options.message,
+      choices
+    })
+  ).resp;
+
+  let response = inquirerResponse == option.y;
 
   logger.methodResponse(`tools/inquirer.ts/confirm (${options.message})`, response);
 
@@ -43,8 +55,21 @@ export async function getListItem(options: getListItemParams) {
   return response;
 }
 
-export async function selectFileOrDirPath(options: { rootPath: string; message: string; type?: "dir" | "file" }) {
+export async function selectFileOrDirPath(options: {
+  rootPath: string;
+  message: string;
+  type?: "dir" | "file";
+  filter?: Set<string>;
+  multiple?: boolean;
+  fileType?: "xml";
+}) {
   const validate = (input: string) => {
+    if (options.fileType && !input.endsWith(options.fileType)) return "Invalid file type.";
+
+    if (options.filter && options.filter.has(input)) {
+      return `${input} was filtered.`;
+    }
+
     switch (options.type) {
       case "dir":
         return Fs.lstatSync(input).isDirectory() ? true : `"${input}" isn't a valid directory`;
@@ -64,11 +89,30 @@ export async function selectFileOrDirPath(options: { rootPath: string; message: 
       name: "resp",
       message: options.message,
       root: options.rootPath,
-      validate: validate
+      validate: options.multiple ? () => true : validate,
+      multiple: options.multiple
     })
   ).resp;
 
   logger.methodResponse(`tools/inquirer.ts/selectFileOrDirPath (${options.message})`, response);
+
+  return response;
+}
+
+export async function getText(options: { message: string; default?: string }) {
+  let response = (
+    await inquirer.prompt({
+      type: "input",
+      name: "resp",
+      message: options.message,
+      default: options.default,
+      validate: (input: string) => {
+        return input != null && input != "";
+      }
+    })
+  ).resp;
+
+  logger.methodResponse(`tools/inquirer.ts/getListItem (${options.message})`, response);
 
   return response;
 }
