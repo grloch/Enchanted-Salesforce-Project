@@ -14,7 +14,8 @@
     "prettier:verify": "prettier --list-different \"**/*.{cls,cmp,component,css,html,js,json,md,page,trigger,xml,yaml,yml}\"",
     "postinstall": "husky install",
     "precommit": "lint-staged",
-    "utils:package:retrieve": "npx ts-node scripts/project/retrievePackage.ts"
+    "utils:package:retrieve": "npx ts-node scripts/project/retrievePackage.ts",
+    "utils:package:merge": "npx ts-node scripts/project/mergePackage.ts"
   },
   "devDependencies": {
     "@lwc/eslint-plugin-lwc": "^1.0.1",

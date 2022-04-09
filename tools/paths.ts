@@ -7,3 +7,5 @@ export const forceApp = "force-app",
   manifest = "manifest",
   packageRoot = "packages",
   logs = Path.join("logs", "project");
+
+export const mergedPackages = Path.join(manifest, 'merged');

@@ -4,11 +4,13 @@ import * as Path from "path";
 import * as paths from "./paths";
 import * as sfdx from "./sfdx";
 import * as utils from "./utils";
+import * as convert from "xml-js";
 import { getLogger } from "./logger";
 const logger = getLogger();
 
 export class PackageController {
   static async retrieve(manifestFile: string, orgAlias: string, destinationDir: string) {
+    // TODO log xml before retrieve
     var hasError = false;
     try {
       await sfdx.executeCommand(`sfdx force:source:retrieve -x="${manifestFile}" -u="${orgAlias}"`);
@@ -22,58 +24,122 @@ export class PackageController {
       utils.movePath(paths.defaultDir, destinationDir);
       utils.copyFile(manifestFile, Path.join(destinationDir, "package.xml"));
     }
-
-    // var manifestFile: string,
-    //   downloadDir = Utils.defaultPackageDirectorie();
-
-    // async function executeRetrieve(manifestFile: string, orgAlias: string) {
-    //   var targetOrg: string = <string>process.env[orgAlias];
-    //   infoLogger.info("Retrieving data from " + targetOrg);
-
-    //
-
-    // async function removeProfilesUserPermissions(profilePath: string) {
-    //   if (!Fs.existsSync(profilePath)) {
-    //     return infoLogger.info("Retrieved source dosn't has a Profile dir.");
-    //   }
-
-    //   var removeProfilesUserPermissions = await inquirer.confirm({ message: `Retrieved data has profiles, remove they user permissions?` });
-
-    //   if (!removeProfilesUserPermissions) {
-    //     return infoLogger.info("Don't removed profiles user permissions.");
-    //   }
-
-    //   for (let profileFile of Fs.readdirSync(profilePath, { withFileTypes: true })) {
-    //     let rawFilePath = Path.join(profilePath, profileFile.name);
-    //     if (!profileFile.isFile()) continue;
-
-    //     let rawFile = Fs.readFileSync(rawFilePath).toString();
-    //     var sanitizedFile = rawFile.replace(/<userPermissions>([\s\S]*)<\/userPermissions>\n<\/Profile>/, '');
-
-    //     sanitizedFile = sanitizedFile.replace(/((\r\n|\n|\r)$)|(^(\r\n|\n|\r))|^\s*$/gm, '')
-    //     sanitizedFile += '</Profile>';
-
-    //     Fs.writeFileSync(rawFilePath, sanitizedFile)
-    //   }
-
-    // }
-
-    //   manifestFile = await Utils.selectManifestFile();
-    //   if (!!!manifestFile) return;
-
-    //   executeRetrieve(manifestFile, await Utils.getTargetOrg())
   }
 }
+
 export class PackageHelper {
-  static async selectPackage() {
+  static async selectPackage(options?: { message?: string; filter?: Set<string>; multiples?: boolean }) {
+    options = options ?? {};
+
+    options.message = options.message ?? "Select a xml file to retrieve";
+
     let response = await inquirer.selectFileOrDirPath({
-      message: "Select a xml file to retrieve",
       rootPath: paths.manifest,
-      type: "file"
+      type: "file",
+      message: options.message,
+      filter: options.filter,
+      multiple: options.multiples,
+      fileType: "xml"
     });
 
     logger.methodResponse(`package.ts/PackageHelper.selectPackage`, response);
 
     return response;
+  }
+}
+
+export class PackageBuilder {
+  private packageMembers: Map<string, Set<string>>;
+  private xmlFile: any;
+
+  constructor() {
+    this.packageMembers = new Map<string, Set<string>>();
+
+    this.xmlFile = {
+      _declaration: {
+        _attributes: { version: "1.0", encoding: "UTF-8", standalone: "yes" }
+      },
+      Package: {
+        types: [],
+        version: "51.0"
+      }
+    };
+  }
+
+  get types() {
+    return this.xmlFile.Package.types;
+  }
+
+  public addMetadata(metadata: string, member: string) {
+    if (!metadata || !member) return;
+
+    metadata = utils.capitalize(metadata.toLocaleLowerCase());
+
+    if (!this.packageMembers.has(metadata)) {
+      this.packageMembers.set(metadata, new Set([member]));
+    } else {
+      this.packageMembers.get(metadata)?.add(member);
+    }
+  }
+
+  public buildFile(path: string = "") {
+    let totalSize = 0;
+    logger.log({ message: `Building metadata:` });
+    for (const mtdaName of [...this.packageMembers.keys()].sort()) {
+      let itensSize = this.packageMembers.get(mtdaName)?.size;
+      totalSize += itensSize!;
+
+      logger.log({ message: `- ${mtdaName}: ${itensSize} iten${itensSize! > 1 ? "s" : ""}` });
+
+      this.xmlFile.Package.types.push({
+        members: [...this.packageMembers.get(mtdaName)!].sort(),
+        name: mtdaName
+      });
+    }
+
+    logger.log({ message: "Total metadata itens: " + totalSize });
+    if (this.packageMembers.has("Profile")) logger.log({ message: "Package contains Profile metadata" });
+
+    if (path != "") this.saveFile(path);
+
+    return this.xmlFile;
+  }
+
+  public saveFile(path: string, fileName: string = "") {
+    let savePath = fileName != "" ? Path.join(path, fileName) : path;
+
+    if (Fs.existsSync(savePath)) logger.log({ message: `${savePath} already exist, file was replaced!` });
+
+    Fs.writeFileSync(
+      savePath,
+      convert.json2xml(this.xmlFile, {
+        compact: true,
+        ignoreComment: true,
+        spaces: 4
+      })
+    );
+  }
+
+  public processFile(file: any) {
+    for (const element of file.elements[0].elements) {
+      if (element.name != "types") continue;
+
+      let fileTypes = element.elements;
+      var typeName: string = "";
+
+      const members: string[] = [];
+
+      for (const typeItem of fileTypes) {
+        if (typeName == "" && typeItem.name == "name") {
+          typeName = typeItem.elements[0].text;
+        } else if (typeItem.name == "members") {
+          members.push(typeItem.elements[0].text);
+        }
+      }
+
+      if (typeName == "") continue;
+
+      for (let m of members) this.addMetadata(typeName, m);
+    }
   }
 }

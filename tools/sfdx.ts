@@ -95,7 +95,9 @@ export function getDefaultOrg() {
 export function executeCommand(sfdxCommand: string) {
   logger.log({ message: "Executing SFDX command: " + sfdxCommand });
 
-  const sfdxProcess = ChildProcess.execSync(sfdxCommand).toString();
+  let splitter = "────────────────────────────────────────────────────────────────────────────────────────────────────";
+
+  const sfdxProcess = `${splitter}\n${ChildProcess.execSync(sfdxCommand).toString()}\n${splitter}`;
   for (var i of sfdxProcess.split("\n")) {
     if (i && i.trim() != "") {
       logger.log({ message: i, prompt: true });
