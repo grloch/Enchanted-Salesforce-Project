@@ -5,8 +5,7 @@ import * as paths from "./paths";
 import * as sfdx from "./sfdx";
 import * as utils from "./utils";
 import * as convert from "xml-js";
-import { getLogger } from "./logger";
-const logger = getLogger();
+import { logger } from "./logger";
 
 export class PackageController {
   static async retrieve(manifestFile: string, orgAlias: string, destinationDir: string) {
@@ -15,8 +14,7 @@ export class PackageController {
     try {
       await sfdx.executeCommand(`sfdx force:source:retrieve -x="${manifestFile}" -u="${orgAlias}"`);
     } catch (error) {
-      logger.error({ message: error + "", throwError: false });
-      hasError = true;
+      logger.error(error + "", false);
     }
 
     if (!hasError) {

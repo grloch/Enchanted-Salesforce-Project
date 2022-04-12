@@ -6,48 +6,56 @@ import * as paths from "../../tools/paths";
 import * as sfdxController from "../../tools/sfdx";
 import * as inquirer from "../../tools/inquirer";
 import { PackageHelper, PackageController } from "../../tools/package";
+import { logger } from "../../tools/logger";
 
-import { getLogger } from "../../tools/logger";
-
-const logger = getLogger({ filename: "retrieve" });
+logger.setFileName({ filename: "retrieve" });
+logger.info("Started retrieve process");
 
 require("dotenv").config();
 
 (async () => {
-  sfdxController.rebaseForceApp(true);
+  try {
+    var salesforceAlias = await sfdxController.getSalesforceOrgAlias();
+    var manifestFilePath = await PackageHelper.selectPackage();
 
-  var salesforceAlias = await sfdxController.getSalesforceOrgAlias();
-  var manifestFilePath = await PackageHelper.selectPackage();
+    var packageName = Path.basename(manifestFilePath, Path.extname(manifestFilePath));
+    logger.info("Package name: " + packageName);
 
-  var packageName = Path.basename(manifestFilePath, Path.extname(manifestFilePath));
-  logger.methodResponse("set packageName", packageName);
+    var destinationDir = Path.join(paths.packageRoot, salesforceAlias, packageName);
+    logger.info("Package destination dir: " + destinationDir);
 
-  var destinationDir = Path.join(paths.packageRoot, salesforceAlias, packageName);
-  logger.methodResponse("set destinationDir", destinationDir);
+    let tableData = [
+      ["Retriving", ""],
+      ["SFDX org alias", salesforceAlias],
+      ["Manifest", manifestFilePath],
+      [
+        "Destination dir",
+        `${destinationDir}${
+          Fs.existsSync(destinationDir) ? "\nDestination folder already exist, it will be replaced." : ""
+        }`
+      ]
+    ];
 
-  let tableData = [
-    ["Retriving", ""],
-    ["SFDX org alias", salesforceAlias],
-    ["Manifest", manifestFilePath],
-    [
-      "Destination dir",
-      `${destinationDir}${
-        Fs.existsSync(destinationDir) ? "\nDestination folder already exist, it will be replaced." : ""
-      }`
-    ]
-  ];
+    let logTable = table(tableData);
 
-  logger.log({ message: table(tableData), prompt: true });
+    logger.log({ message: `\n${logTable}`, prompt: false });
+    console.log(logTable);
 
-  let confirmRetrieve = await inquirer.confirm({ message: "Execute retrieve?" });
+    let confirmRetrieve = await inquirer.confirm({ message: "Execute retrieve?" });
 
-  if (!confirmRetrieve) {
-    logger.log({ message: "User canceled the operation.", prompt: true });
-  } else {
-    logger.log({ message: "Starting sfdx", prompt: true });
+    if (!confirmRetrieve) {
+      logger.log({ message: "User canceled the operation.", prompt: true });
+    } else {
+      sfdxController.rebaseForceApp(true);
 
-    await PackageController.retrieve(manifestFilePath, salesforceAlias, destinationDir);
+      logger.log({ message: "Starting sfdx", prompt: true });
+
+      await PackageController.retrieve(manifestFilePath, salesforceAlias, destinationDir);
+
+      sfdxController.rebaseForceApp(false);
+    }
+  } catch (error) {
+    sfdxController.rebaseForceApp(false);
+    logger.failedProcessEnded(error);
   }
-
-  sfdxController.rebaseForceApp(false);
 })();

@@ -48,7 +48,7 @@ export function createDir(dirPath: string) {
 }
 
 export function xml2json(filePath: string) {
-  logger.log({ message: "Parsing " + filePath });
+  logger.info("Parsing " + filePath);
 
   try {
     let rawFile = Fs.readFileSync(filePath).toString();
@@ -57,8 +57,8 @@ export function xml2json(filePath: string) {
 
     return JSON.parse(convert.xml2json(rawFile, {}));
   } catch (error) {
-    logger.error({ message: `Fail while parsing ${filePath}:` });
-    logger.error({ message: error + "" });
+    logger.error(`Fail while parsing ${filePath}:`);
+    logger.error(error + "");
 
     return null;
   }

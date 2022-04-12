@@ -15,7 +15,8 @@
     "postinstall": "husky install",
     "precommit": "lint-staged",
     "utils:package:retrieve": "npx ts-node scripts/project/retrievePackage.ts",
-    "utils:package:merge": "npx ts-node scripts/project/mergePackage.ts"
+    "utils:package:merge": "npx ts-node scripts/project/mergePackage.ts",
+    "utils:package:deploy": "npx ts-node scripts/project/deployPackage.ts"
   },
   "devDependencies": {
     "@lwc/eslint-plugin-lwc": "^1.0.1",
@@ -46,6 +47,7 @@
     ]
   },
   "dependencies": {
+    "colors": "^1.4.0",
     "dotenv": "^16.0.0",
     "fs-extra": "^10.0.1",
     "inquirer": "^8.2.2",

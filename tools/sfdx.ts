@@ -2,11 +2,9 @@ import * as Path from "path";
 import * as Fs from "fs-extra";
 import * as paths from "./paths";
 import * as inquirer from "./inquirer";
-import { getLogger } from "./logger";
+import { logger } from "./logger";
 import * as ChildProcess from "child_process";
 import * as Utils from "./utils";
-
-const logger = getLogger();
 
 export function rebaseForceApp(isBefore: Boolean) {
   var oldPath = isBefore ? paths.forceApp : paths.tempForceApp;
@@ -29,16 +27,6 @@ export function rebaseForceApp(isBefore: Boolean) {
 
     Utils.movePath(oldPath, newPath);
   }
-
-  // if (!isBefore) {
-  //   Fs.rmSync(paths.forceApp, { recursive: true });
-  //   logger.log({ message: `Removed "${paths.forceApp}"` });
-  // }
-
-  // if (isBefore) {
-  //   Fs.mkdirSync(paths.defaultDir, { recursive: true });
-  //   logger.log({ message: `Created dir "${paths.defaultDir}"` });
-  // }
 }
 
 export async function getSalesforceOrgAlias(options?: { multiples?: boolean }) {
@@ -73,10 +61,10 @@ export function getLocalOrgsAlias() {
   }
 
   if (aliasOptions.length == 0) {
-    logger.error({
-      message: `No SFDX alias founded on ./.env or a default or for current project, make sure that all org alias are added on SF_ORGLIST variable of ./.env, separeted by ";"`,
-      throwError: true
-    });
+    logger.error(
+      `No SFDX alias founded on ./.env or a default or for current project, make sure that all org alias are added on SF_ORGLIST variable of ./.env, separeted by ";"`,
+      true
+    );
   }
 
   return aliasOptions;
@@ -93,7 +81,7 @@ export function getDefaultOrg() {
 }
 
 export function executeCommand(sfdxCommand: string) {
-  logger.log({ message: "Executing SFDX command: " + sfdxCommand });
+  logger.info("Executing SFDX command: " + sfdxCommand);
 
   let splitter = "────────────────────────────────────────────────────────────────────────────────────────────────────";
 
