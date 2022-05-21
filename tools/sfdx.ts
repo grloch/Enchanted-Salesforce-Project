@@ -92,3 +92,27 @@ export function executeCommand(sfdxCommand: string) {
     }
   }
 }
+
+export async function getDeployTestLevel() {
+  let options = [
+    {
+      name: "No test run (No tests are run. This test level applies only to deployments to development environments, such as sandbox, Developer Edition, or trial orgs. This test level is the default for development environments.)",
+      value: "NoTestRun"
+    },
+    {
+      name: "Run local tests (All tests in your org are run, except the ones that originate from installed managed and unlocked packages. This test level is the default for production deployments that include Apex classes or triggers.)",
+      value: "RunLocalTests"
+    },
+    {
+      name: "RunSpecifiedTests (Runs only the tests that you specify. Code coverage requirements differ from the default coverage requirements when using this test level. Executed tests must comprise a minimum of 75% code coverage for each class and trigger in the deployment package. This coverage is computed for each class and trigger individually and is different than the overall coverage percentage.)",
+      value: "RunSpecifiedTests"
+    },
+    {
+      name: "Run all tests in org (All tests in your org are run, including tests of managed packages.)",
+      value: "RunAllTestsInOrg"
+    }
+
+    // RunLocalTests—
+  ];
+  return await inquirer.getListItem({ message: "Select the deploy test level", options: options });
+}

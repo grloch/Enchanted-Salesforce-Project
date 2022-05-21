@@ -11,16 +11,18 @@ interface getListItemParams {
 
 inquirer.registerPrompt("fileTreeSelection", require("inquirer-file-tree-selection-prompt"));
 
-export async function confirm(options: { message: string; option?: { y: string; n: string } }) {
+export async function confirm(options: { message: string; option?: { y: string; n: string }; invert?: Boolean }) {
   let option = options.option ?? { y: "Confirm", n: "No" };
   let choices = [option.y, option.n];
+
+  if (options.invert) choices.reverse();
 
   let inquirerResponse = (
     await inquirer.prompt({
       type: "list",
       name: "resp",
       message: options.message,
-      choices
+      choices,
     })
   ).resp;
 

@@ -6,6 +6,7 @@ import * as paths from "../../tools/paths";
 import * as sfdxController from "../../tools/sfdx";
 import * as utils from "../../tools/utils";
 import * as inquirer from "../../tools/inquirer";
+import * as sfdx from "../../tools/sfdx";
 import { PackageHelper, PackageController } from "../../tools/package";
 
 import { logger } from "../../tools/logger";
@@ -56,11 +57,24 @@ function getAvaliabeOrgList() {
       logger.error(`No avaliable xml for package at "${xmlPackagePath}"`, true);
     }
 
+    let testLevel = await sfdx.getDeployTestLevel();
+
+    let testOnly = await inquirer.confirm({
+      message:
+        "Check only? (Won't commit changes, only check the package dependecies and apex test classes if tests are runned)",
+      option: { y: "Yes, I'm just checking my package", n: "No, save my changes on " + salesforceAlias },
+      invert: true
+    });
+
+    // TODO check only
+
     let tableData = [
-      ["Retriving", ""],
+      ["Deploying", ""],
       ["SFDX org alias", salesforceAlias],
       ["Package", packageName],
-      ["Package dir", packagePath]
+      ["Package dir", packagePath],
+      ["Test level", testLevel],
+      ["Check only", testOnly]
     ];
 
     let logTable = table(tableData);
@@ -68,30 +82,32 @@ function getAvaliabeOrgList() {
     logger.log({ message: `\n${logTable}`, prompt: false });
     console.log(logTable);
 
-    // TODO Test level
-
-    // NoTestRun—No tests are run. This test level applies only to deployments to development environments, such as sandbox, Developer Edition, or trial orgs. This test level is the default for development environments.
-
-    // RunLocalTests—All tests in your org are run, except the ones that originate from installed managed and unlocked packages. This test level is the default for production deployments that include Apex classes or triggers.
-
-    // TODO check only
+    return;
 
     let confirmDeploy = await inquirer.confirm({ message: "Execute deploy?" });
 
     if (confirmDeploy) {
-      sfdxController.rebaseForceApp(true);
+      // sfdxController.rebaseForceApp(true);
 
-      Fs.copySync(packagePath, paths.defaultDir);
+      // Fs.copySync(packagePath, paths.defaultDir);
 
       await inquirer.confirm({ message: "Execute deploy?" });
-      utils.deletePath(paths.defaultDir);
+      // utils.deletePath(paths.defaultDir);
 
       // TODO setup environment
 
       // TODO do deploy
 
       // TODO rebuild environment
-      sfdxController.rebaseForceApp(false);
+      // sfdxController.rebaseForceApp(false);
+
+
+
+
+
+
+
+
     } else {
       logger.log({ message: "User canceled operation.", type: "ERROR", prompt: true });
     }

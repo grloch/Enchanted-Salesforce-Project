@@ -7,6 +7,25 @@ import * as utils from "./utils";
 import * as convert from "xml-js";
 import { logger } from "./logger";
 
+type SfdxDeployTestLevel = "NoTestRun" | "RunLocalTests" | "RunAllTestsInOrg" | "RunSpecifiedTests";
+
+interface SfdxOptions {
+  targetUsername: string;
+}
+
+interface DeployOptions extends SfdxOptions {
+  sourcepath: string;
+}
+
+interface DeployOptionsWithTest extends DeployOptions {
+  testLevel: "NoTestRun" | "RunLocalTests" | "RunAllTestsInOrg";
+}
+
+interface DeployWithSpecifiedTests extends DeployOptions {
+  testLevel: "RunSpecifiedTests";
+  runTests: Array<string>;
+}
+
 export class PackageController {
   static async retrieve(manifestFile: string, orgAlias: string, destinationDir: string) {
     // TODO log xml before retrieve
@@ -21,6 +40,17 @@ export class PackageController {
       utils.deletePath(destinationDir);
       utils.movePath(paths.defaultDir, destinationDir);
       utils.copyFile(manifestFile, Path.join(destinationDir, "package.xml"));
+    }
+  }
+
+  static async deploy(options: DeployOptions | DeployOptionsWithTest | DeployWithSpecifiedTests) {
+    let sfdxCommand = `sfdx force:source:deploy --targetusername ${options.targetUsername} --sourcepath ${options.sourcepath}`;
+
+    try {
+      // await sfdx.executeCommand(`sfdx force:source:deploy --targetusername ${orgAlias} --sourcepath ${packagePath} --testlevel RunLocalTests
+      // `);
+    } catch (error) {
+      logger.error(error + "", false);
     }
   }
 }
