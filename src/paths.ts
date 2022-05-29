@@ -5,7 +5,7 @@ export const forceApp = "force-app",
   defaultDir = Path.join("force-app", "main", "default"),
   sfdxConfig = Path.join(process.cwd(), ".sfdx", "sfdx-config.json"),
   manifest = "manifest",
-  packageRoot = "packages",
-  logs = Path.join("logs", "project");
-
-export const mergedPackages = Path.join(manifest, 'merged');
+  packages = Path.join("manifest", "packages"),
+  logs = Path.join("logs", "project"),
+  mergedPackages = Path.join(manifest, "merged"),
+  defaultPackage = Path.join("src", "defaultPackage.xml");

@@ -1,10 +1,87 @@
 {
-  "name": "salesforce-app",
+  "name": "Enchanted-Salesforce-Project",
   "private": true,
   "version": "1.0.0",
-  "description": "Salesforce App",
+   "description": "Enchanted Salesforce App",
+   "engines": {
+    "node": ">=12.0.0"
+  },
+  "author": "Gabriel Loch",
+  "bin": {
+    "enchantedCMD": "./bin/run"
+  },
+  "bugs": "https://github.com/grloch/hello-world/issues",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "repository": "projetos/hello-world",
+  "files": [
+    "/bin",
+    "/dist",
+    "/npm-shrinkwrap.json",
+    "/oclif.manifest.json"
+  ],
+  "dependencies": {
+    "@oclif/core": "^1",
+    "colors": "^1.4.0",
+    "dotenv": "^16.0.0",
+    "fs-extra": "^10.0.1",
+    "@oclif/plugin-help": "^5",
+    "@oclif/plugin-plugins": "^2.0.1",
+    "fs-extra": "^10.1.0",
+    "inquirer": "^8.2.2",
+    "inquirer-file-tree-selection-prompt": "^1.0.18",
+    "table": "^6.8.0",
+    "xml-js": "^1.6.11"
+  },
+  "devDependencies": {
+  "@lwc/eslint-plugin-lwc": "^1.0.1",
+    "@prettier/plugin-xml": "^0.13.1",
+    "@salesforce/eslint-config-lwc": "^2.0.0",
+    "@salesforce/eslint-plugin-aura": "^2.0.0",
+    "@salesforce/eslint-plugin-lightning": "^0.1.1",
+    "@salesforce/sfdx-lwc-jest": "^0.13.0",
+    "@oclif/test": "^2",
+    "@types/chai": "^4",
+    "@types/fs-extra": "^9.0.13",
+    "@types/mocha": "^9.0.0",
+   "@types/inquirer": "^8.2.1",
+    "@types/node": "^17.0.23",
+    "chai": "^4",
+    "eslint": "^7.32.0",
+    "eslint-plugin-import": "^2.23.4",
+    "eslint-plugin-jest": "^24.3.6",
+    "husky": "^7.0.0",
+    "lint-staged": "^11.0.0",
+    "eslint-config-oclif": "^4",
+    "eslint-config-oclif-typescript": "^1.0.2",
+    "globby": "^11",
+    "mocha": "^9",
+    "prettier": "^2.3.2",
+    "prettier-plugin-apex": "^1.10.0",
+    "nodemon": "^2.0.16",
+    "oclif": "^3",
+    "shx": "^0.3.3",
+     "ts-node": "^10.7.0",
+    "tslib": "^2.3.1",
+    "typescript": "^4.6.3"
+  },
+  "oclif": {
+    "bin": "enchantedCMD",
+    "dirname": "enchantedCMD",
+    "commands": "./dist/commands",
+    "plugins": [
+      "@oclif/plugin-help",
+      "@oclif/plugin-plugins"
+    ],
+    "topicSeparator": " ",
+    "topics": {
+      "hello": {
+        "description": "Say hello to the world and others"
+      }
+    }
+  },
   "scripts": {
-    "lint": "eslint **/{aura,lwc}/**",
+  	"lint": "eslint **/{aura,lwc}/**",
     "test": "npm run test:unit",
     "test:unit": "sfdx-lwc-jest",
     "test:unit:watch": "sfdx-lwc-jest --watch",
@@ -13,46 +90,29 @@
     "prettier": "prettier --write \"**/*.{cls,cmp,component,css,html,js,json,md,page,trigger,xml,yaml,yml}\"",
     "prettier:verify": "prettier --list-different \"**/*.{cls,cmp,component,css,html,js,json,md,page,trigger,xml,yaml,yml}\"",
     "postinstall": "husky install",
+    "oclif:build": "shx rm -rf dist && tsc -b",
+    "lint": "eslint . --ext .ts --config .eslintrc",
+    "oclif:postpack": "shx rm -f oclif.manifest.json",
+    "posttest": "yarn lint",
+    "oclif:prepack": "yarn build && oclif manifest && oclif readme",
+    "oclif:test": "mocha --forbid-only \"test/**/*.test.ts\"",
+    "oclif:version": "oclif readme && git add README.md",
     "precommit": "lint-staged",
     "utils:package:retrieve": "npx ts-node scripts/project/retrievePackage.ts",
     "utils:package:merge": "npx ts-node scripts/project/mergePackage.ts",
     "utils:package:deploy": "npx ts-node scripts/project/deployPackage.ts"
   },
-  "devDependencies": {
-    "@lwc/eslint-plugin-lwc": "^1.0.1",
-    "@prettier/plugin-xml": "^0.13.1",
-    "@salesforce/eslint-config-lwc": "^2.0.0",
-    "@salesforce/eslint-plugin-aura": "^2.0.0",
-    "@salesforce/eslint-plugin-lightning": "^0.1.1",
-    "@salesforce/sfdx-lwc-jest": "^0.13.0",
-    "@types/fs-extra": "^9.0.13",
-    "@types/inquirer": "^8.2.1",
-    "@types/node": "^17.0.23",
-    "eslint": "^7.29.0",
-    "eslint-plugin-import": "^2.23.4",
-    "eslint-plugin-jest": "^24.3.6",
-    "husky": "^7.0.0",
-    "lint-staged": "^11.0.0",
-    "prettier": "^2.3.2",
-    "prettier-plugin-apex": "^1.10.0",
-    "ts-node": "^10.7.0",
-    "typescript": "^4.6.3"
-  },
-  "lint-staged": {
+  "bugs": "https://github.com/projetos/hello-world/issues",
+  "keywords": [
+    "oclif"
+  ],
+  "types": "dist/index.d.ts",
+   "lint-staged": {
     "**/*.{cls,cmp,component,css,html,js,json,md,page,trigger,xml,yaml,yml}": [
       "prettier --write"
     ],
     "**/{aura,lwc}/**": [
       "eslint"
     ]
-  },
-  "dependencies": {
-    "colors": "^1.4.0",
-    "dotenv": "^16.0.0",
-    "fs-extra": "^10.0.1",
-    "inquirer": "^8.2.2",
-    "inquirer-file-tree-selection-prompt": "^1.0.18",
-    "table": "^6.8.0",
-    "xml-js": "^1.6.11"
   }
 }

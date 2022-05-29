@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<Package>
+  <fullName>!{fullname}</fullName>
+
+  <types>
+    <members>*</members>
+    <name>ApexClass</name>
+  </types>
+  
+  <version>51.0</version>
+</Package>

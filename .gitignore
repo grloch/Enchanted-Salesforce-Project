@@ -23,6 +23,7 @@ yarn-error.log*
 
 # Dependency directories
 node_modules/
+node_modules
 
 # Eslint cache
 .eslintcache
@@ -41,3 +42,14 @@ $RECYCLE.BIN/
 private
 packages/*
 force-app/main/default/
+
+
+*-error.log
+/.nyc_output
+/dist
+/lib
+/package-lock.json
+/tmp
+/yarn.lock
+oclif.manifest.json
+.sfdx/sfdx-config.json
