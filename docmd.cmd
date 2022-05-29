@@ -1,2 +1,3 @@
+rmdir /s /q "manifest\\packages"
 call  npm run oclif:build 
-.\bin\run package:new -n="Package name"
+.\bin\dev package:new -n="Test Package"
