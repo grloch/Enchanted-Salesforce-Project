@@ -53,3 +53,4 @@ force-app/main/default/
 /yarn.lock
 oclif.manifest.json
 .sfdx/sfdx-config.json
+manifest/packages/*
